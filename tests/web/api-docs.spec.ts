@@ -26,10 +26,31 @@ test.describe('API Docs Page', () => {
     // Click the Send Request button near "Get All Users" heading
     const sendButton = authenticatedPage.getByRole('button', { name: /send/i }).first();
     await sendButton.waitFor({ state: 'visible' });
+    
+    // Listen for API response
+    const responsePromise = authenticatedPage.waitForResponse(
+      response => response.url().includes('/api/users') && response.request().method() === 'GET'
+    );
+    
     await sendButton.click();
     
-    // Wait a moment for the request to complete
-    await authenticatedPage.waitForTimeout(1000);
+    // Wait for the API response
+    const response = await responsePromise;
+    
+    // Verify the response was successful
+    expect(response.status()).toBe(200);
+    
+    // Verify response body contains users array
+    const responseBody = await response.json();
+    expect(Array.isArray(responseBody)).toBeTruthy();
+    expect(responseBody.length).toBeGreaterThan(0);
+    
+    // Wait for UI to display the response
+    await authenticatedPage.waitForTimeout(500);
+    
+    // Verify response is displayed on the page (check for JSON or response container)
+    const responseDisplay = authenticatedPage.locator('text=/200|users|id|email/i').first();
+    await expect(responseDisplay).toBeVisible({ timeout: 5000 });
     
     // Take a screenshot to verify
     await authenticatedPage.screenshot({ path: 'api-docs-get-users.png' });
