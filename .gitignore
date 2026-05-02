@@ -147,3 +147,6 @@ playwright-report/
 *.jpeg
 !docs/**/*.png
 !docs/**/*.jpg
+
+# JavaScript tasks (practice/solutions)
+js-tasks/
