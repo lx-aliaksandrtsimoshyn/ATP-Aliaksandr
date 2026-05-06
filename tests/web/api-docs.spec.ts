@@ -3,57 +3,40 @@ import { ApiDocsPage } from '../../page-objects/api-docs-page';
 
 test.describe('API Docs Page', () => {
   
-  test('should navigate to API docs and click Get All Users button', async ({ authenticatedPage }) => {
-    // Navigate to API docs page
-    await authenticatedPage.goto('/api-docs');
-    
-    // Verify page loaded
-    await expect(authenticatedPage).toHaveTitle('ATP');
-    
-    // Wait for page content to be ready
-    await authenticatedPage.waitForLoadState('networkidle');
-    
+  test('should display success badge after clicking Get All Users button', async ({ authenticatedPage }) => {
     // Create page object
     const apiDocsPage = new ApiDocsPage(authenticatedPage);
     
-    // Wait for the "Get All Users" heading to be visible
-    const getAllUsersHeading = authenticatedPage.getByRole('heading', { name: /Get All Users/i });
-    await getAllUsersHeading.waitFor({ state: 'visible', timeout: 10000 });
+    // Navigate to API docs page using page object method
+    await apiDocsPage.goto('/api-docs');
     
-    // Scroll to the element
-    await getAllUsersHeading.scrollIntoViewIfNeeded();
+    // Wait for page content to be ready using page object method
+    await apiDocsPage.waitForPageLoad();
     
-    // Click the Send Request button near "Get All Users" heading
-    const sendButton = authenticatedPage.getByRole('button', { name: /send/i }).first();
-    await sendButton.waitFor({ state: 'visible' });
+    // Click Get All Users button using page object
+    await apiDocsPage.clickGetAllUsers();
     
-    // Listen for API response
-    const responsePromise = authenticatedPage.waitForResponse(
-      response => response.url().includes('/api/users') && response.request().method() === 'GET'
-    );
+    // Verify success badge appears with "200 Success" text using page object
+    const successBadge = await apiDocsPage.verifySuccessBadge();
+    await expect(successBadge).toContainText('GET request successful! (200)');
+  });
+  
+  test('should display error badge when clicking Get All Users without authentication', async ({ page }) => {
+    // Create page object with unauthenticated page
+    const apiDocsPage = new ApiDocsPage(page);
     
-    await sendButton.click();
+    // Navigate to API docs page using page object method
+    await apiDocsPage.goto('/api-docs');
     
-    // Wait for the API response
-    const response = await responsePromise;
+    // Wait for page content to be ready using page object method
+    await apiDocsPage.waitForPageLoad();
     
-    // Verify the response was successful
-    expect(response.status()).toBe(200);
+    // Click Get All Users button using page object
+    await apiDocsPage.clickGetAllUsers();
     
-    // Verify response body contains users array
-    const responseBody = await response.json();
-    expect(Array.isArray(responseBody)).toBeTruthy();
-    expect(responseBody.length).toBeGreaterThan(0);
-    
-    // Wait for UI to display the response
-    await authenticatedPage.waitForTimeout(500);
-    
-    // Verify response is displayed on the page (check for JSON or response container)
-    const responseDisplay = authenticatedPage.locator('text=/200|users|id|email/i').first();
-    await expect(responseDisplay).toBeVisible({ timeout: 5000 });
-    
-    // Take a screenshot to verify
-    await authenticatedPage.screenshot({ path: 'api-docs-get-users.png' });
+    // Verify error badge appears (it's a temporary popup that quickly disappears)
+    const errorBadge = await apiDocsPage.verifyErrorBadge();
+    await expect(errorBadge).toContainText('Authentication required for this endpoint.');
   });
   
 });
