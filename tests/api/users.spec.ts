@@ -12,7 +12,7 @@ test.describe('Users API', () => {
     expect(Array.isArray(users)).toBeTruthy();
     expect(users.length).toBeGreaterThan(0);
     
-    // Verify user structure
+    // Verify the user structure
     const firstUser = users[0];
     expect(firstUser).toHaveProperty('id');
     expect(firstUser).toHaveProperty('name');
