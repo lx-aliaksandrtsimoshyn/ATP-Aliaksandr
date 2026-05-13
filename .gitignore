@@ -147,3 +147,6 @@ playwright-report/
 *.jpeg
 !docs/**/*.png
 !docs/**/*.jpg
+
+# JS tasks scratch file
+js-tasks/playground.js
