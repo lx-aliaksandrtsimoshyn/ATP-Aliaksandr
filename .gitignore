@@ -149,4 +149,4 @@ playwright-report/
 !docs/**/*.jpg
 
 # JS tasks scratch file
-js-tasks/playground.js
+tests/js-tasks/playground.js

@@ -7,6 +7,7 @@
     "test": "playwright test",
     "test:api": "playwright test --project=api",
     "test:web": "playwright test --project=web",
+    "test:js": "playwright test --project=js_tasks",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",

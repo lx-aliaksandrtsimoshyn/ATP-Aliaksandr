@@ -29,5 +29,11 @@ export default defineConfig({
       testMatch: /tests\/web\/.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
+
+    // JavaScript tasks - solutions and exercises
+    {
+      name: 'js_tasks',
+      testMatch: /tests\/js-tasks\/.*\.js/,
+    },
   ],
 });
